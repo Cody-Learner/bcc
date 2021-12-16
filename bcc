@@ -2,8 +2,8 @@
 # depends: base-devel devtools expac asp git auracle-git
 # preliminary work - aurch dev
 
-# Packages found in:
-# Official :  /tmp/bcc/<package>/repos/core-[x86_64/|any]
+# Built packages found in:
+# Official :  /tmp/bcc/<package>/repos/core-[x86_64/|*-any]
 # AUR      :  /tmp/bcc/
 #----------------------------------------------------------------------
 CHROOT="${HOME}/Chroot-Builds"
@@ -55,7 +55,7 @@ fetch (){
 	cd "${basedir}" || exit
 
 if	find "${builddir}" -maxdepth 0 -type d  &>/dev/null; then
-	cd "${builddir}"
+	cd "${builddir}" || exit
 	git pull
 	exit
 fi
@@ -71,8 +71,8 @@ if	[[ ${repo} == OFFICIAL ]] ; then
 	[[ ${repo} == AUR ]] ; then
 	auracle clone "${P}"
 	cd "${builddir}" || exit
-	echo 'Fetch=true' >"${builddir}"/Fetch || error_message
-echo "Repo: ${repo}"
+	echo 'true' >"${builddir}"/Fetch || error_message
+
 fi
 }
 #----------------------------------------------------------------------
@@ -80,10 +80,10 @@ fi
 
 build (){
 
-	eval "$(cat "${builddir}/Fetch" 2>/dev/null)"	# sets Fetch=true
+	Fetch=$(cat "${builddir}/Fetch" 2>/dev/null)
 
 if	[[ ${Fetch} != true ]]; then
-	 echo "Need to fetch build requirements. Run 'absp -f' before 'absp -b'."
+	 echo "Need to fetch build requirements before building."
 	 exit
 fi
 if	[[ ${Fetch} == true ]]; then
@@ -110,7 +110,7 @@ echo "
 :: Something has gone horribly wrong!
 "
 }
-
+#----------------------------------------------------------------------
 ### Run help on no arguments ###
  
 	[[ -z $1 ]] && help
