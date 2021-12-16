@@ -1,5 +1,7 @@
 # bcc
 
-preliminary work - aurch dev
- 
-Script to build Arch AUR and official packages in clean chroot and information on devtools package.
+This was preliminary work leading to aurch.
+
+For Arch linux packages. 
+Builds AUR and official packages in clean chroot.
+Information on devtools package.
