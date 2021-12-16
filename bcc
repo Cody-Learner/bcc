@@ -66,7 +66,7 @@ if	[[ ${repo} == OFFICIAL ]] ; then
 	cd "${dir}" || exit
 	asp update "${P}"
 	git pull
-	echo 'Fetch=true' >"${builddir}"/Fetch || error_message
+	echo 'true' >"${builddir}"/Fetch || error_message
     elif
 	[[ ${repo} == AUR ]] ; then
 	auracle clone "${P}"
