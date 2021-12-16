@@ -1,0 +1,46 @@
+   Arch linux devtools package
+
+     Scripts:
+
+1  archbuild          
+2  archco
+3  arch-nspawn
+4  archrelease
+5  checkpkg
+6  commitpkg
+7  crossrepomove
+8  finddeps
+9  find-libdeps
+10 lddd
+11 makechrootpkg
+12 makerepropkg
+13 mkarchroot
+14 offload-build
+15 rebuildpkgs
+16 sogrep
+
+   Links to scripts:
+
+ extra2community              ->  crossrepomove
+ extrapkg                     ->  commitpkg
+ extra-x86_64-build           ->  archbuild
+ find-libprovides             ->  find-libdeps
+ gnome-unstablepkg            ->  commitpkg
+ gnome-unstable-x86_64-build  ->  archbuild
+ kde-unstablepkg              ->  commitpkg
+ kde-unstable-x86_64-build    ->  archbuild
+ multilib-build               ->  archbuild
+ multilibpkg                  ->  commitpkg
+ multilib-staging-build       ->  archbuild
+ multilib-stagingpkg          ->  commitpkg
+ multilib-testing-build       ->  archbuild
+ multilib-testingpkg          ->  commitpkg
+ stagingpkg                   ->  commitpkg
+ staging-x86_64-build         ->  archbuild
+ testingpkg                   ->  commitpkg
+ testing-x86_64-build         ->  archbuild
+ community2extra              ->  crossrepomove
+ communityco                  ->  archco
+ communitypkg                 ->  commitpkg
+ community-stagingpkg         ->  commitpkg
+ community-testingpkg         ->  commitpkg

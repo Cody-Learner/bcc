@@ -1,0 +1,92 @@
+
+devtools (bin scripts & man pages)
+
+---------------------------------------------------------------------------------------------------
+
+$ manl -sn devtools
+man7 devtools.7.gz
+
+---------------------------------------------------------------------------------------------------
+
+$ p -Qlq devtools | awk -F/ '/\/man/ {print $5,$6}'
+ 
+man1 checkpkg.1.gz
+man1 find-libdeps.1.gz
+man1 find-libprovides.1.gz
+man1 lddd.1.gz
+man1 makerepropkg.1.gz
+man1 mkarchroot.1.gz
+man1 offload-build.1.gz
+man1 sogrep.1.gz
+man7 devtools.7.gz
+
+---------------------------------------------------------------------------------------------------
+
+Useful scripts:
+
+arch-nspawn		Wrapper around systemd-nspawn. Provides support for pacman.
+archbuild		Recreate the chroot before building
+mkarchroot		Creates an arch chroot in: specified location / specified packages
+makechrootpkg		Builds package inside a clean chroot. Run in dir with PKGBUILD.
+
+---------------------------------------------------------------------------------------------------
+
+Other scripts, not links:
+
+archco                  ?    
+archrelease		?
+checkpkg		Compare the current build pakcage with the repository version
+commitpkg		?
+crossrepomove		?
+find-libdeps		Find soname dependencies for a package
+finddeps		Find packages that depend on a given depname
+lddd			Find broken library links on your system
+makerepropkg		Rebuild a package to see if it is reproducible
+offload-build		Build a PKGBUILD on a remote server using makechrootpkg
+rebuildpkgs             ?    
+sogrep			Find packages using a linked to a given shared library
+
+
+---------------------------------------------------------------------------------------------------
+
+$ p -Qlq devtools | grep bin | xargs -L1 file | awk '{print $1,$3,$4,$5}' | awk -F'/' '{print $4}' | column -t
+:                                             
+arch-nspawn:                  shell  script,  ASCII
+archbuild:                    shell  script,  ASCII
+archco:                       shell  script,  ASCII
+archrelease:                  shell  script,  ASCII
+checkpkg:                     shell  script,  ASCII
+commitpkg:                    shell  script,  ASCII
+community-stagingpkg:         link   to       commitpkg
+community-testingpkg:         link   to       commitpkg
+community2extra:              link   to       crossrepomove
+communityco:                  link   to       archco
+communitypkg:                 link   to       commitpkg
+crossrepomove:                shell  script,  ASCII
+extra-x86_64-build:           link   to       archbuild
+extra2community:              link   to       crossrepomove
+extrapkg:                     link   to       commitpkg
+find-libdeps:                 shell  script,  ASCII
+find-libprovides:             link   to       find-libdeps
+finddeps:                     shell  script,  ASCII
+gnome-unstable-x86_64-build:  link   to       archbuild
+gnome-unstablepkg:            link   to       commitpkg
+kde-unstable-x86_64-build:    link   to       archbuild
+kde-unstablepkg:              link   to       commitpkg
+lddd:                         shell  script,  ASCII
+makechrootpkg:                shell  script,  ASCII
+makerepropkg:                 shell  script,  ASCII
+mkarchroot:                   shell  script,  ASCII
+multilib-build:               link   to       archbuild
+multilib-staging-build:       link   to       archbuild
+multilib-stagingpkg:          link   to       commitpkg
+multilib-testing-build:       link   to       archbuild
+multilib-testingpkg:          link   to       commitpkg
+multilibpkg:                  link   to       commitpkg
+offload-build:                shell  script,  ASCII
+rebuildpkgs:                  shell  script,  ASCII
+sogrep:                       shell  script,  ASCII
+staging-x86_64-build:         link   to       archbuild
+stagingpkg:                   link   to       commitpkg
+testing-x86_64-build:         link   to       archbuild
+testingpkg:                   link   to       commitpkg

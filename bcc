@@ -1,0 +1,127 @@
+#!/bin/bash
+# depends: base-devel devtools expac asp git auracle-git
+# preliminary work - aurch dev
+
+# Packages found in:
+# Official :  /tmp/bcc/<package>/repos/core-[x86_64/|any]
+# AUR      :  /tmp/bcc/
+#----------------------------------------------------------------------
+CHROOT="${HOME}/Chroot-Builds"
+P="${2}"
+basedir="/tmp/bcc" 		; [[ ! -d ${basedir} ]] && mkdir -p "${basedir}"
+builddir="${basedir}"/"${P}"
+#----------------------------------------------------------------------
+help (){
+	echo "
+ build in clean chroot for official and AUR packages
+
+ Usage: bcc [operation] <package-name>
+ Operations:
+	-s  = Setup a Chroot
+	-f  = Fetch Build Requirements
+	-b  = Build Package
+	-h  = Help
+"
+}
+#----------------------------------------------------------------------
+buildachroot(){
+
+if	[[ ! -d  ${HOME}/Chroot-Builds/.arch-chroot ]]; then
+	mkdir "${CHROOT}"
+	mkarchroot "${CHROOT}"/root base-devel
+fi
+}
+#----------------------------------------------------------------------
+### Set official or AUR package ###
+
+setrepo (){
+
+### Official or AUR repo ###
+
+if	pkg=$(auracle search ^"${P}"$ 2>/dev/null) && [[ -n ${pkg} ]] ; then
+	repo=AUR
+   elif	expac -S '%n' "${P}" &>/dev/null ; then
+	repo=OFFICIAL
+   else
+	echo " Package NA "
+	exit
+fi
+}
+#----------------------------------------------------------------------
+### Fetch build requirements ###
+
+fetch (){
+
+	cd "${basedir}" || exit
+
+if	find "${builddir}" -maxdepth 0 -type d  &>/dev/null; then
+	cd "${builddir}"
+	git pull
+	exit
+fi
+if	[[ ${repo} == OFFICIAL ]] ; then
+	asp checkout "${P}"
+	cd "${builddir}" || exit
+	dir=$(find repos/*/PKGBUILD | awk -F/ '{print $1"/"$2"/"}' | grep -v testing)
+	cd "${dir}" || exit
+	asp update "${P}"
+	git pull
+	echo 'Fetch=true' >"${builddir}"/Fetch || error_message
+    elif
+	[[ ${repo} == AUR ]] ; then
+	auracle clone "${P}"
+	cd "${builddir}" || exit
+	echo 'Fetch=true' >"${builddir}"/Fetch || error_message
+echo "Repo: ${repo}"
+fi
+}
+#----------------------------------------------------------------------
+### Build with makepkg ###
+
+build (){
+
+	eval "$(cat "${builddir}/Fetch" 2>/dev/null)"	# sets Fetch=true
+
+if	[[ ${Fetch} != true ]]; then
+	 echo "Need to fetch build requirements. Run 'absp -f' before 'absp -b'."
+	 exit
+fi
+if	[[ ${Fetch} == true ]]; then
+
+	if	[[ ${repo} == OFFICIAL ]] ; then
+		arch-nspawn "${CHROOT}"/root pacman -Syu
+		cd "${builddir}" || exit
+		dir=$(find repos/*/PKGBUILD | awk -F/ '{print $1"/"$2"/"}' | grep -v testing)
+		cd "${dir}" || exit
+		makechrootpkg -c -r "${CHROOT}"
+    	elif
+		[[ ${repo} == AUR ]] ; then
+		arch-nspawn "${CHROOT}"/root pacman -Syu
+		cd "${builddir}" || exit
+		makechrootpkg -c -r "${CHROOT}"
+	fi
+fi
+}
+#----------------------------------------------------------------------
+### Error message ###
+
+error_message () {
+echo "
+:: Something has gone horribly wrong!
+"
+}
+
+### Run help on no arguments ###
+ 
+	[[ -z $1 ]] && help
+#======================================================================
+while	:; do
+	case "${1}" in
+	  -s)   buildachroot				;;
+	  -f)	setrepo ; fetch				;;
+	  -b)	setrepo ; build	|| error_message	;;
+	  -h)	help		 			;;
+	  *)	break					;;
+	esac
+    shift
+done
