@@ -2,11 +2,10 @@
 # depends: base-devel devtools expac asp git auracle-git
 # preliminary work - aurch dev
 
-# Built packages found in:
-# Official :  /tmp/bcc/<package>/repos/core-[x86_64/|*-any]
-# AUR      :  /tmp/bcc/
+# Chroot location: /var/lib/aurbuild/x86_64/root
+# Packages       : /tmp/bcc/<package>
 #----------------------------------------------------------------------
-CHROOT="${HOME}/Chroot-Builds"
+CHROOT=/var/lib/archbuild/extra-x86_64/
 P="${2}"
 basedir="/tmp/bcc" 		; [[ ! -d ${basedir} ]] && mkdir -p "${basedir}"
 builddir="${basedir}"/"${P}"
@@ -26,8 +25,11 @@ help (){
 #----------------------------------------------------------------------
 buildachroot(){
 
-if	[[ ! -d  ${HOME}/Chroot-Builds/.arch-chroot ]]; then
-	mkdir "${CHROOT}"
+if	[[ ! -d "${CHROOT}"/root ]]; then
+	echo "::
+ 	Building an Arch chroot.
+	"
+	sudo mkdir -p "${CHROOT}"	
 	mkarchroot "${CHROOT}"/root base-devel
 fi
 }
@@ -76,7 +78,7 @@ if	[[ ${repo} == OFFICIAL ]] ; then
 fi
 }
 #----------------------------------------------------------------------
-### Build with makepkg ###
+### Build with makepkg wrapped in devtools script ###
 
 build (){
 
@@ -89,13 +91,16 @@ fi
 if	[[ ${Fetch} == true ]]; then
 
 	if	[[ ${repo} == OFFICIAL ]] ; then
-		arch-nspawn "${CHROOT}"/root pacman -Syu
 		cd "${builddir}" || exit
-		dir=$(find repos/*/PKGBUILD | awk -F/ '{print $1"/"$2"/"}' | grep -v testing)
+		dir=$(find repos/*/PKGBUILD | awk -F/ '{print $1"/"$2"/"}' | grep -v testing| head -1)
 		cd "${dir}" || exit
-		makechrootpkg -c -r "${CHROOT}"
-    	elif
+		extra-x86_64-build |& tee >(grep 'right now' > right.now 2>&1)  | grep -v 'right now'
+		awk '{$2="NOTE:" ; print $1,$2,$3,$4,$5,$6,$7,$8" same as the "$9,$10,$11,$12"s "$13,$14}' right.now
+		pkg=$(find  -type f -name "*.pkg.tar.*" | grep -v '.log' | tail -1)
+		sudo mv "${pkg}" "${builddir}"
+	    elif
 		[[ ${repo} == AUR ]] ; then
+		buildachroot
 		arch-nspawn "${CHROOT}"/root pacman -Syu
 		cd "${builddir}" || exit
 		makechrootpkg -c -r "${CHROOT}"
@@ -117,7 +122,6 @@ echo "
 #======================================================================
 while	:; do
 	case "${1}" in
-	  -s)   buildachroot				;;
 	  -f)	setrepo ; fetch				;;
 	  -b)	setrepo ; build	|| error_message	;;
 	  -h)	help		 			;;
