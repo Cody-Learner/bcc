@@ -6,6 +6,18 @@ This was preliminary work leading up to writing my 'aurch' AUR helper.<br>
 <br>
 Note: dependencies must be installed prior to using this script.<br>
 Dependencies: base-devel devtools expac asp git auracle-git<br>
+
+ Usage: bcc [operation] <package-name>
+ Operations:
+	-f  = Fetch Build Requirements
+	-b  = Build Package
+	-h  = Help
+<br>
+ Run 'bcc -f <package-name>' to fetch the build requirements before building.<br>
+<br>
+ Chroot location:	/var/lib/archbuild/* <br>
+ Build location:	/tmp/bcc/ <br>
+ Built packages:	/tmp/bcc/\<package-name\>/\<package-name\>-\<version\>-\<arch\>.pkg.tar.zst <br>
 <br>
 <br>
 **Updated for Jan 15, 2023:**<br>
