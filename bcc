@@ -1,9 +1,10 @@
 #!/bin/bash
+# bcc: (b)uild packages in (c)lean (c)hroot 2023-02-15
 # depends: base-devel devtools expac asp git auracle-git
-# preliminary work - aurch dev
 
 # Chroot location: /var/lib/aurbuild/x86_64/root
-# Packages       : /tmp/bcc/<package>
+# Built Packages:  /tmp/bcc/<package>
+
 #----------------------------------------------------------------------
 CHROOT=/var/lib/archbuild/extra-x86_64/
 P="${2}"
@@ -12,14 +13,19 @@ builddir="${basedir}"/"${P}"
 #----------------------------------------------------------------------
 help (){
 	echo "
- build in clean chroot for official and AUR packages
+ bcc: Builds official and AUR repo packages in a clean chroot.
 
  Usage: bcc [operation] <package-name>
  Operations:
-	-s  = Setup a Chroot
 	-f  = Fetch Build Requirements
 	-b  = Build Package
 	-h  = Help
+
+ Run 'bcc -f <package-name>' to fetch the build requirements before building.
+
+ Chroot location:	/var/lib/archbuild/*
+ Build location:	/tmp/bcc/
+ Built packages:	/tmp/bcc/<package-name>/<package-name>-<version>-<arch>.pkg.tar.zst
 "
 }
 #----------------------------------------------------------------------
@@ -37,8 +43,6 @@ fi
 ### Set official or AUR package ###
 
 setrepo (){
-
-### Official or AUR repo ###
 
 if	pkg=$(auracle search ^"${P}"$ 2>/dev/null) && [[ -n ${pkg} ]] ; then
 	repo=AUR
@@ -85,7 +89,9 @@ build (){
 	Fetch=$(cat "${builddir}/Fetch" 2>/dev/null)
 
 if	[[ ${Fetch} != true ]]; then
-	 echo "Need to fetch build requirements before building."
+	echo "Need to fetch build requirements before building."
+	echo "Printing help page..."
+	bcc -h
 	 exit
 fi
 if	[[ ${Fetch} == true ]]; then
@@ -97,6 +103,7 @@ if	[[ ${Fetch} == true ]]; then
 		extra-x86_64-build |& tee >(grep 'right now' > right.now 2>&1)  | grep -v 'right now'
 		awk '{$2="NOTE:" ; print $1,$2,$3,$4,$5,$6,$7,$8" same as the "$9,$10,$11,$12"s "$13,$14}' right.now
 		pkg=$(find  -type f -name "*.pkg.tar.*" | grep -v '.log' | tail -1)
+		echo " sudo may be required if timed out, to move built package from chroot to /tmp/bcc/<package>."
 		sudo mv "${pkg}" "${builddir}"
 	    elif
 		[[ ${repo} == AUR ]] ; then
