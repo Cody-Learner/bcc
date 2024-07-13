@@ -23,9 +23,8 @@ Dependencies: base-devel devtools expac asp git auracle-git<br>
 <br>
 <br>
 **News for July 13, 2024:**<br>
-This script has not worked for official packages since Arch migrated packages to git long ago now.
-However, it still works well for AUR packages and I continue to use it occasionally.
-
+This script has not worked for official packages since Arch migrated package repos to git.<br>
+However, it still works well for AUR packages and I continue to use it occasionally.<br>
 **Updated for Jan 15, 2023:**<br>
 Ran a test build successfully on AUR python2: https://aur.archlinux.org/packages/python2 <br>
 Cleaned up this README.md file and clarify help and comments in the script.<br>
